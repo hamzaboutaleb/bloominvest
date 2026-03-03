@@ -4,22 +4,28 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  Linkedin, 
-  Twitter, 
-  Instagram, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  Linkedin,
+  Twitter,
+  Instagram,
   Dribbble,
   ArrowRight,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles,
+  Zap,
+  MessageCircle,
+  Lock,
 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import CustomSelect from "@/components/CustomSelect";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Badge } from "@/components/ui/Badge";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -46,18 +52,18 @@ const ContactPage = () => {
   // Validation
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (formData.firstName.length < 2) newErrors.firstName = "First name is too short";
     if (formData.lastName.length < 2) newErrors.lastName = "Last name is too short";
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) newErrors.email = "Please enter a valid email";
-    
+
     if (!formData.service) newErrors.service = "Please select a service";
     if (!formData.budget) newErrors.budget = "Please select a budget";
-    
+
     if (formData.message.length < 20) newErrors.message = "Please tell us a bit more (min 20 chars)";
-    
+
     if (!formData.agree) newErrors.agree = "You must agree to the terms";
 
     setErrors(newErrors);
@@ -68,12 +74,12 @@ const ContactPage = () => {
     if (!validate()) return;
 
     setStatus("loading");
-    
+
     // Simulate API call
     setTimeout(() => {
       setStatus("success");
       setShowToast(true);
-      
+
       // Auto-dismiss toast
       setTimeout(() => setShowToast(false), 4000);
     }, 2000);
@@ -84,55 +90,32 @@ const ContactPage = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: "easeOut" as const,
-      },
-    },
-  };
-
-  const pillVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring" as const,
-        stiffness: 120,
-        damping: 14,
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1] as const,
       },
     },
   };
 
   const promises = [
-    { icon: "💬", label: "We reply within 24h" },
-    { icon: "📞", label: "Free first consultation" },
-    { icon: "🤝", label: "No commitment needed" },
+    { icon: <CheckCircle2 className="w-4 h-4 text-green-500" />, label: "We reply within 24h" },
+    { icon: <CheckCircle2 className="w-4 h-4 text-green-500" />, label: "Free first consultation" },
+    { icon: <CheckCircle2 className="w-4 h-4 text-green-500" />, label: "No commitment needed" },
   ];
 
   return (
     <main className="relative min-h-screen bg-[#F8FAFC] overflow-hidden font-sans">
-      <style jsx global>{`
-        @keyframes drift-up {
-          from { background-position: 0 0; }
-          to { background-position: 0 -24px; }
-        }
-        .animate-drift-up {
-          animation: drift-up 4s linear infinite;
-        }
-      `}</style>
-
       {/* Success Toast */}
       <AnimatePresence>
         {showToast && (
@@ -145,49 +128,32 @@ const ContactPage = () => {
           >
             <CheckCircle2 className="text-green-500 w-6 h-6" />
             <div>
-              <p className="font-bold text-[#1E293B] text-sm">Message Sent!</p>
+              <p className="font-bold text-slate-900 text-sm">Message Sent!</p>
               <p className="text-slate-500 text-xs">We&apos;ll get back to you within 24 hours.</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Decorative Warm Blobs */}
-      <motion.div
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -20, 0],
-          borderRadius: [
-            "60% 40% 70% 30% / 50% 60% 40% 50%",
-            "40% 60% 30% 70% / 60% 40% 50% 50%",
-            "60% 40% 70% 30% / 50% 60% 40% 50%",
-          ],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute -top-24 -right-24 w-[600px] h-[600px] bg-[#FFEDD5] opacity-15 z-0"
-      />
-      <motion.div
-        animate={{
-          x: [0, -20, 0],
-          y: [0, 30, 0],
-          borderRadius: [
-            "60% 40% 70% 30% / 50% 60% 40% 50%",
-            "70% 30% 50% 50% / 40% 60% 60% 40%",
-            "60% 40% 70% 30% / 50% 60% 40% 50%",
-          ],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1,
-        }}
-        className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-[#BFDBFE] opacity-10 z-0"
-      />
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{
+            rotate: [0, 5, -5, 0],
+            scale: [1, 1.05, 0.95, 1],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-[10%] -right-[5%] w-[60vw] h-[60vw] max-w-[700px] max-h-[700px] rounded-full bg-gradient-to-br from-blue-200/40 to-violet-200/40 blur-3xl"
+        />
+        <motion.div
+          animate={{
+            rotate: [0, -5, 5, 0],
+            scale: [1, 1.05, 0.95, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
+          className="absolute top-[60%] -left-[10%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-gradient-to-br from-indigo-200/30 to-purple-200/30 blur-3xl"
+        />
+      </div>
 
       {/* Hero Content */}
       <section className="relative z-10 pt-[140px] pb-[80px] px-4">
@@ -196,46 +162,44 @@ const ContactPage = () => {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="flex flex-col items-center"
+            className="flex flex-col items-center space-y-8"
           >
-            <motion.div
+            <Badge
               variants={itemVariants}
-              className="px-4 py-1.5 bg-[#DBEAFE] rounded-full mb-8"
+              icon={<Sparkles className="w-4 h-4" />}
             >
-              <span className="text-[#2563EB] text-sm font-bold uppercase tracking-wider">
-                Contact Us
-              </span>
-            </motion.div>
+              Contact Us
+            </Badge>
 
             <motion.h1
               variants={itemVariants}
-              className="text-4xl md:text-5xl lg:text-[60px] font-bold text-[#1E293B] leading-[1.15] mb-8"
+              className="text-4xl md:text-5xl lg:text-[60px] font-bold text-slate-900 leading-[1.15] tracking-tight"
             >
-              Let&apos;s start a conversation
+              Let&apos;s start a{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">
+                conversation
+              </span>
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
-              className="text-lg md:text-xl text-[#64748B] font-inter max-w-[540px] leading-relaxed mx-auto mb-12"
+              className="text-lg md:text-xl text-slate-600 font-normal max-w-[540px] leading-relaxed mx-auto"
             >
               Whether you have a project in mind or just want to explore what&apos;s possible — we&apos;d love to hear from you.
             </motion.p>
 
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap justify-center gap-3"
+              className="flex flex-wrap justify-center gap-4 pt-2"
             >
               {promises.map((p, idx) => (
-                <motion.div
+                <div
                   key={idx}
-                  variants={pillVariants}
-                  className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-[#E2E8F0] rounded-full shadow-sm shadow-slate-200/50"
+                  className="flex items-center space-x-2 text-slate-600 text-sm font-medium"
                 >
-                  <span className="text-base">{p.icon}</span>
-                  <span className="text-[13px] font-bold text-[#1E293B] whitespace-nowrap">
-                    {p.label}
-                  </span>
-                </motion.div>
+                  {p.icon}
+                  <span>{p.label}</span>
+                </div>
               ))}
             </motion.div>
           </motion.div>
@@ -243,10 +207,13 @@ const ContactPage = () => {
       </section>
 
       {/* Contact Split Form Section */}
-      <section id="contact-form" className="relative z-10 bg-white py-24 border-t border-[#E2E8F0]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="contact-form" className="relative z-10 bg-white py-24 border-t border-slate-100">
+        {/* Subtle Grid Background */}
+        <div className="absolute inset-0 bg-[url('/img/grid.svg')] bg-center opacity-[0.02] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            
+
             {/* Left Column: Info Panel */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -255,31 +222,31 @@ const ContactPage = () => {
               transition={{ type: "spring", stiffness: 70, damping: 20 }}
               className="flex flex-col items-start"
             >
-              <div className="mb-10 relative">
-                <Image 
-                  src="/img/young-man.png" 
-                  alt="Contact Representative" 
-                  width={320} 
-                  height={320} 
-                  className="rounded-2xl object-cover"
+              <div className="mb-10 relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                <Image
+                  src="/img/young-man.png"
+                  alt="Contact Representative"
+                  width={320}
+                  height={320}
+                  className="object-cover"
                 />
               </div>
-              
-              <h2 className="text-[28px] font-bold text-[#1E293B] font-sans mb-4">
+
+              <h2 className="text-[28px] font-bold text-slate-900 tracking-tight mb-4">
                 We&apos;d love to hear about your project
               </h2>
-              <p className="text-[15px] text-[#64748B] font-inter leading-relaxed mb-6 max-w-[440px]">
+              <p className="text-[15px] text-slate-600 font-normal leading-relaxed mb-6 max-w-[440px]">
                 Fill in the form and we&apos;ll get back to you within 24 hours. Prefer to talk? Book a free call directly.
               </p>
-              
-              <Link href="#" className="group flex items-center text-[#F97316] font-bold text-base hover:underline mb-8 transition-all">
-                Book a Free Call 
+
+              <Link href="#" className="group flex items-center text-blue-600 font-semibold text-base hover:underline mb-8 transition-all">
+                Book a Free Call
                 <motion.span whileHover={{ x: 4 }} className="ml-2">
                   <ArrowRight className="w-5 h-5" />
                 </motion.span>
               </Link>
 
-              <div className="w-full h-[1px] bg-[#E2E8F0] mb-10" />
+              <div className="w-full h-[1px] bg-slate-200 mb-10" />
 
               <div className="space-y-8 mb-12 w-full">
                 {[
@@ -289,12 +256,12 @@ const ContactPage = () => {
                   { icon: <Clock />, label: "Hours", value: "Mon–Fri, 9am–6pm EST" },
                 ].map((detail, idx) => (
                   <div key={idx} className="flex items-center space-x-4 group">
-                    <div className="w-10 h-10 bg-[#EFF6FF] rounded-lg flex items-center justify-center text-[#2563EB] group-hover:bg-[#2563EB] group-hover:text-white transition-colors duration-300">
+                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 group-hover:scale-110">
                       {React.cloneElement(detail.icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, { className: "w-5 h-5" })}
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{detail.label}</span>
-                      <span className="text-[15px] font-bold text-[#1E293B] font-sans">{detail.value}</span>
+                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">{detail.label}</span>
+                      <span className="text-[15px] font-semibold text-slate-900 tracking-tight">{detail.value}</span>
                     </div>
                   </div>
                 ))}
@@ -302,13 +269,13 @@ const ContactPage = () => {
 
               <div className="flex items-center space-x-5">
                 {[Linkedin, Twitter, Instagram, Dribbble].map((Icon, idx) => (
-                  <motion.a 
+                  <motion.a
                     key={idx}
-                    href="#" 
-                    whileHover={{ scale: 1.15 }}
-                    className="text-slate-400 hover:text-[#2563EB] transition-colors"
+                    href="#"
+                    whileHover={{ y: -3 }}
+                    className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-300"
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-4 h-4" />
                   </motion.a>
                 ))}
               </div>
@@ -321,18 +288,18 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ type: "spring", stiffness: 70, damping: 20 }}
             >
-              <div className="bg-white p-8 md:p-10 rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-[#E2E8F0]">
+              <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:shadow-[0_12px_40px_rgba(37,99,235,0.06)] transition-shadow duration-500">
                 <div className="grid grid-cols-1 gap-6">
                   {/* Row 1: Names */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-[13px] font-bold text-[#1E293B] font-sans uppercase tracking-wide">First Name</label>
-                      <input 
-                        type="text" 
+                      <label className="text-[13px] font-bold text-slate-900 uppercase tracking-wide">First Name</label>
+                      <input
+                        type="text"
                         placeholder="John"
                         className={cn(
-                          "w-full px-4 py-3 bg-white border rounded-[10px] text-[15px] font-inter placeholder:text-slate-400 transition-all outline-none",
-                          errors.firstName ? "border-red-500" : "border-[#E2E8F0] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-50"
+                          "w-full px-4 py-3 bg-[#F8FAFC] border rounded-xl text-sm font-normal text-slate-900 placeholder:text-slate-400 transition-all outline-none",
+                          errors.firstName ? "border-red-500" : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                         )}
                         value={formData.firstName}
                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -344,13 +311,13 @@ const ContactPage = () => {
                       </AnimatePresence>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[13px] font-bold text-[#1E293B] font-sans uppercase tracking-wide">Last Name</label>
-                      <input 
-                        type="text" 
+                      <label className="text-[13px] font-bold text-slate-900 uppercase tracking-wide">Last Name</label>
+                      <input
+                        type="text"
                         placeholder="Doe"
                         className={cn(
-                          "w-full px-4 py-3 bg-white border rounded-[10px] text-[15px] font-inter placeholder:text-slate-400 transition-all outline-none",
-                          errors.lastName ? "border-red-500" : "border-[#E2E8F0] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-50"
+                          "w-full px-4 py-3 bg-[#F8FAFC] border rounded-xl text-sm font-normal text-slate-900 placeholder:text-slate-400 transition-all outline-none",
+                          errors.lastName ? "border-red-500" : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                         )}
                         value={formData.lastName}
                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
@@ -365,13 +332,13 @@ const ContactPage = () => {
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <label className="text-[13px] font-bold text-[#1E293B] font-sans uppercase tracking-wide">Email Address</label>
-                    <input 
-                      type="email" 
+                    <label className="text-[13px] font-bold text-slate-900 uppercase tracking-wide">Email Address</label>
+                    <input
+                      type="email"
                       placeholder="john@example.com"
                       className={cn(
-                        "w-full px-4 py-3 bg-white border rounded-[10px] text-[15px] font-inter placeholder:text-slate-400 transition-all outline-none",
-                        errors.email ? "border-red-500" : "border-[#E2E8F0] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-50"
+                        "w-full px-4 py-3 bg-[#F8FAFC] border rounded-xl text-sm font-normal text-slate-900 placeholder:text-slate-400 transition-all outline-none",
+                        errors.email ? "border-red-500" : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                       )}
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -385,18 +352,18 @@ const ContactPage = () => {
 
                   {/* Phone */}
                   <div className="space-y-2">
-                    <label className="text-[13px] font-bold text-[#1E293B] font-sans uppercase tracking-wide">Phone <span className="text-slate-400 capitalize font-medium">(optional)</span></label>
-                    <input 
-                      type="tel" 
+                    <label className="text-[13px] font-bold text-slate-900 uppercase tracking-wide">Phone <span className="text-slate-400 capitalize font-medium">(optional)</span></label>
+                    <input
+                      type="tel"
                       placeholder="+1 (555) 000-0000"
-                      className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-[10px] text-[15px] font-inter placeholder:text-slate-400 focus:border-[#2563EB] outline-none transition-all"
+                      className="w-full px-4 py-3 bg-[#F8FAFC] border border-slate-200 rounded-xl text-sm font-normal text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
 
                   {/* Selects */}
-                  <CustomSelect 
+                  <CustomSelect
                     label="Service Needed"
                     placeholder="Select a service"
                     value={formData.service}
@@ -414,7 +381,7 @@ const ContactPage = () => {
                   {errors.service && <p className="text-red-500 text-xs font-medium -mt-4">{errors.service}</p>}
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <CustomSelect 
+                    <CustomSelect
                       label="Project Budget"
                       placeholder="Select budget"
                       value={formData.budget}
@@ -428,7 +395,7 @@ const ContactPage = () => {
                       ]}
                       onChange={(val) => setFormData({ ...formData, budget: val })}
                     />
-                    <CustomSelect 
+                    <CustomSelect
                       label="Project Timeline"
                       placeholder="Select timeline"
                       value={formData.timeline}
@@ -445,12 +412,12 @@ const ContactPage = () => {
 
                   {/* Message */}
                   <div className="space-y-2">
-                    <label className="text-[13px] font-bold text-[#1E293B] font-sans uppercase tracking-wide">Tell us about your project</label>
-                    <textarea 
+                    <label className="text-[13px] font-bold text-slate-900 uppercase tracking-wide">Tell us about your project</label>
+                    <textarea
                       placeholder="Hey, we're looking to build a new..."
                       className={cn(
-                        "w-full px-4 py-3 bg-white border rounded-[10px] text-[15px] font-inter placeholder:text-slate-400 transition-all outline-none min-h-[140px] resize-y",
-                        errors.message ? "border-red-500" : "border-[#E2E8F0] focus:border-[#2563EB] focus:ring-4 focus:ring-blue-50"
+                        "w-full px-4 py-3 bg-[#F8FAFC] border rounded-xl text-sm font-normal text-slate-900 placeholder:text-slate-400 transition-all outline-none min-h-[140px] resize-y",
+                        errors.message ? "border-red-500" : "border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20"
                       )}
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -466,21 +433,21 @@ const ContactPage = () => {
                   <div className="flex flex-col space-y-2">
                     <label className="flex items-start space-x-3 cursor-pointer group">
                       <div className="relative flex items-center justify-center mt-0.5">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           className="peer absolute opacity-0 w-5 h-5 cursor-pointer"
                           checked={formData.agree}
                           onChange={(e) => setFormData({ ...formData, agree: e.target.checked })}
                         />
                         <div className={cn(
-                          "w-5 h-5 border-2 rounded-[4px] transition-all duration-200 peer-checked:bg-[#2563EB] peer-checked:border-[#2563EB]",
-                          errors.agree ? "border-red-500" : "border-[#E2E8F0]"
+                          "w-5 h-5 border-2 rounded-[4px] transition-all duration-200 peer-checked:bg-blue-600 peer-checked:border-blue-600",
+                          errors.agree ? "border-red-500" : "border-slate-300"
                         )}>
                           {formData.agree && <CheckCircle2 className="w-4 h-4 text-white p-0.5" />}
                         </div>
                       </div>
-                      <span className="text-[13px] text-[#64748B] font-inter leading-tight select-none">
-                        I agree to the <Link href="#" className="text-[#2563EB] hover:underline">Privacy Policy</Link> and <Link href="#" className="text-[#2563EB] hover:underline">Terms of Service</Link>
+                      <span className="text-[13px] text-slate-600 font-normal leading-tight select-none">
+                        I agree to the <Link href="#" className="text-blue-600 hover:underline font-medium">Privacy Policy</Link> and <Link href="#" className="text-blue-600 hover:underline font-medium">Terms of Service</Link>
                       </span>
                     </label>
                     {errors.agree && <p className="text-red-500 text-xs font-medium ml-8">{errors.agree}</p>}
@@ -490,33 +457,39 @@ const ContactPage = () => {
                   <motion.button
                     disabled={status === "loading"}
                     whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleSubmit}
                     className={cn(
-                      "w-full py-4 rounded-full font-bold text-base shadow-lg transition-all flex items-center justify-center space-x-3 cursor-pointer",
-                      status === "success" ? "bg-green-500 text-white" : "bg-[#F97316] text-white hover:brightness-110 shadow-[#F97316]/20",
+                      "group relative overflow-hidden w-full py-4 rounded-full font-semibold text-base shadow-lg transition-all flex items-center justify-center space-x-3 cursor-pointer",
+                      status === "success"
+                        ? "bg-green-500 text-white"
+                        : "bg-slate-900 text-white hover:shadow-slate-900/25",
                       status === "loading" && "opacity-80 cursor-not-allowed"
                     )}
                   >
                     {status === "loading" ? (
                       <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Sending...</span>
+                        <Loader2 className="w-5 h-5 animate-spin relative z-10" />
+                        <span className="relative z-10">Sending...</span>
                       </>
                     ) : status === "success" ? (
                       <>
-                        <CheckCircle2 className="w-5 h-5" />
-                        <span>Message Sent!</span>
+                        <CheckCircle2 className="w-5 h-5 relative z-10" />
+                        <span className="relative z-10">Message Sent!</span>
                       </>
                     ) : (
                       <>
-                        <span>Send My Message</span>
-                        <ArrowRight className="w-5 h-5" />
+                        <span className="relative z-10">Send My Message</span>
+                        <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-blue-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                        />
                       </>
                     )}
                   </motion.button>
-                  <p className="text-[12px] text-slate-400 font-inter text-center">
-                    🔒 Your information is safe with us
+                  <p className="flex items-center justify-center space-x-2 text-[12px] text-slate-500 font-normal text-center">
+                    <Lock className="w-3 h-3" />
+                    <span>Your information is safe with us</span>
                   </p>
                 </div>
               </div>
@@ -526,28 +499,24 @@ const ContactPage = () => {
       </section>
 
       {/* Map & Office Info Section */}
-      <section className="relative z-10 bg-[#F8FAFC] py-24">
+      <section className="relative z-10 bg-[#F8FAFC] py-24 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Intro Block */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-20 flex flex-col items-center"
-          >
-            <div className="px-4 py-1.5 bg-[#DBEAFE] rounded-full mb-6">
-              <span className="text-[#2563EB] text-xs font-bold uppercase tracking-wider">
-                Find Us
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl lg:text-[40px] font-bold text-[#1E293B] mb-6 font-sans">
-              We&apos;re based in New York — but we work everywhere
-            </h2>
-            <p className="text-lg text-[#64748B] max-w-[520px] font-inter leading-relaxed">
-              Our team is fully remote-friendly. Wherever you are in the world, we&apos;re just a message away.
-            </p>
-          </motion.div>
+          <SectionHeader
+            badgeText="Find Us"
+            badgeIcon={<Sparkles className="w-4 h-4" />}
+            badgeClassName="bg-[#F8FAFC]"
+            title={
+              <>
+                We&apos;re based in New York — but we work{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">
+                  everywhere
+                </span>
+              </>
+            }
+            description="Our team is fully remote-friendly. Wherever you are in the world, we're just a message away."
+            className="mb-20"
+          />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-20">
             {/* Left Side: Interactive Map */}
@@ -558,10 +527,10 @@ const ContactPage = () => {
               transition={{ type: "spring", stiffness: 70, damping: 20 }}
               className="flex flex-col space-y-4"
             >
-              <p className="text-slate-500 text-[13px] font-inter text-center lg:text-left">
+              <p className="text-slate-500 text-[13px] font-normal text-center lg:text-left">
                 📍 New York, NY — Our home base
               </p>
-              <div className="relative w-full h-[420px] rounded-[20px] overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.10)] border-2 border-[#2563EB]">
+              <div className="relative w-full h-[420px] rounded-3xl overflow-hidden shadow-sm border-2 border-blue-600">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830869428!2d-74.119763973046!3d40.69766374874431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
                   width="100%"
@@ -572,10 +541,10 @@ const ContactPage = () => {
                   referrerPolicy="no-referrer-when-downgrade"
                 ></iframe>
               </div>
-              <Link 
-                href="https://www.google.com/maps/dir//New+York,+NY" 
+              <Link
+                href="https://www.google.com/maps/dir//New+York,+NY"
                 target="_blank"
-                className="text-[#2563EB] text-sm font-bold hover:underline self-center lg:self-start transition-all"
+                className="text-blue-600 text-sm font-semibold hover:underline self-center lg:self-start transition-all"
               >
                 Get Directions &rarr;
               </Link>
@@ -617,16 +586,16 @@ const ContactPage = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.1 * idx }}
-                  className="bg-white p-6 rounded-[14px] border border-[#E2E8F0] shadow-sm flex items-start space-x-5 group hover:border-[#2563EB] hover:-translate-y-1 transition-all duration-300"
+                  className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start space-x-5 group hover:border-blue-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(37,99,235,0.08)] transition-all duration-300"
                 >
-                  <div className="w-10 h-10 bg-[#EFF6FF] rounded-lg flex items-center justify-center text-[#2563EB] shrink-0 group-hover:bg-[#2563EB] group-hover:text-white transition-colors">
+                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0 group-hover:bg-blue-600 group-hover:text-white group-hover:scale-110 transition-all duration-300">
                     {React.cloneElement(card.icon as React.ReactElement<React.SVGProps<SVGSVGElement>>, { className: "w-5 h-5" })}
                   </div>
                   <div>
-                    <h3 className="text-[16px] font-bold text-[#1E293B] mb-1 font-sans">
+                    <h3 className="text-[16px] font-bold text-slate-900 mb-1 tracking-tight">
                       {card.title}
                     </h3>
-                    <p className="text-[14px] text-slate-500 font-inter leading-relaxed">
+                    <p className="text-[14px] text-slate-500 font-normal leading-relaxed">
                       {card.detail}
                     </p>
                   </div>
@@ -641,67 +610,69 @@ const ContactPage = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.4 }}
-            className="w-full bg-[#EFF6FF] rounded-[16px] border border-[#BFDBFE] p-8 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-8"
+            className="w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-8 hover:shadow-[0_12px_40px_rgba(37,99,235,0.06)] transition-shadow duration-500"
           >
             <div className="flex flex-col space-y-1">
-              <h3 className="text-xl font-bold text-[#1E293B] font-sans">
+              <h3 className="text-xl font-bold text-slate-900 tracking-tight">
                 Prefer a face-to-face meeting?
               </h3>
-              <p className="text-[15px] text-slate-500 font-inter">
+              <p className="text-[15px] text-slate-500 font-normal">
                 We offer virtual meetings via Zoom, Google Meet, or your preferred platform.
               </p>
             </div>
             <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="bg-[#2563EB] text-white px-8 py-3.5 rounded-full font-bold text-sm shadow-lg shadow-blue-200 cursor-pointer whitespace-nowrap"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden bg-slate-900 text-white px-8 py-3.5 rounded-full font-semibold text-sm shadow-lg cursor-pointer whitespace-nowrap"
             >
-              Book a Free Call &rarr;
+              <span className="relative z-10">Book a Free Call &rarr;</span>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-blue-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+              />
             </motion.button>
           </motion.div>
         </div>
       </section>
 
       {/* Closing CTA Banner */}
-      <section className="relative w-full bg-gradient-to-br from-[#2563EB] to-[#F97316] py-[140px] overflow-hidden">
-        {/* Background Dot Pattern (Drifting) */}
-        <div 
-          className="absolute inset-0 opacity-[0.04] z-0 animate-drift-up"
+      <section className="relative w-full bg-slate-900 py-[120px] lg:py-[160px] overflow-hidden">
+        {/* Subtle Background Texture */}
+        <div
+          className="absolute inset-0 opacity-[0.03] z-0"
           style={{
             backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
-            backgroundSize: '24px 24px'
+            backgroundSize: '32px 32px'
           }}
         />
 
-        {/* Pulsing Ripple Circles */}
-        {[800, 500, 300].map((size, idx) => (
-          <motion.div
-            key={size}
-            animate={{ scale: [1, 1.06, 1] }}
-            transition={{ 
-              duration: 4, 
-              repeat: Infinity, 
-              ease: "easeInOut",
-              delay: idx * 0.8 
-            }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-white/5 rounded-full z-0 pointer-events-none"
-            style={{ width: size, height: size }}
-          />
-        ))}
-
-        {/* Drifting Blobs */}
+        {/* Modern Gradient Orbs */}
         <motion.div
-          animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-20 -left-20 w-64 h-64 bg-white/6 rounded-full blur-3xl z-0"
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 z-0 pointer-events-none"
         />
         <motion.div
-          animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-20 -right-20 w-80 h-80 bg-white/6 rounded-full blur-3xl z-0"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3 z-0 pointer-events-none"
         />
 
-        <div className="max-w-[760px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <div className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10 text-center">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -710,87 +681,113 @@ const ContactPage = () => {
               hidden: { opacity: 0 },
               visible: {
                 opacity: 1,
-                transition: { staggerChildren: 0.12 }
+                transition: { staggerChildren: 0.15 }
               }
             }}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center space-y-8"
           >
             {/* Pill Badge */}
             <motion.div
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              className="px-4 py-1.5 bg-white/15 rounded-full mb-8"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-white/5 backdrop-blur-md rounded-full border border-white/10 shadow-xl mb-2"
             >
-              <span className="text-white text-xs font-bold uppercase tracking-wider font-sans">
+              <Sparkles className="w-4 h-4 text-blue-400" />
+              <span className="text-white text-sm font-semibold tracking-wide">
                 Let&apos;s Do This
               </span>
             </motion.div>
 
             {/* Headline */}
             <motion.h2
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              className="text-4xl md:text-5xl lg:text-[56px] font-bold text-white leading-[1.1] font-sans mb-8 max-w-[680px]"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              className="text-4xl md:text-5xl lg:text-[64px] font-bold text-white leading-[1.1] tracking-tight max-w-3xl"
             >
-              Your next great website starts with a conversation
+              Your next great website starts with a{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">
+                conversation
+              </span>
             </motion.h2>
 
             {/* Subtext */}
             <motion.p
-              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              className="text-lg text-white/80 font-inter max-w-[580px] leading-relaxed mb-8"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              className="text-lg md:text-xl text-slate-300 font-normal max-w-[600px] leading-relaxed"
             >
               We&apos;re selective about the projects we take on because we give each one everything we&apos;ve got. If you&apos;re serious about growing online — so are we.
             </motion.p>
 
-            {/* Divider */}
-            <motion.div
-              variants={{ hidden: { opacity: 0, scaleX: 0 }, visible: { opacity: 1, scaleX: 1 } }}
-              className="w-[60px] h-[1px] bg-white/15 mb-8"
-            />
-
             {/* Founder Promises */}
             <motion.div
-              variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
-              className="flex flex-wrap justify-center items-center gap-y-2 mb-12"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1 }
+              }}
+              className="flex flex-wrap justify-center gap-6 pt-4"
             >
               {[
-                "🤝 We treat your business like our own",
-                "💡 Every solution is custom built",
-                "📈 We measure success by your growth"
-              ].map((text, idx) => (
-                <div key={idx} className="flex items-center">
-                  <span className="text-white/75 text-[15px] font-inter">{text}</span>
-                  {idx < 2 && <div className="w-1 h-1 bg-white/30 rounded-full mx-4 hidden sm:block" />}
-                </div>
+                { icon: <Zap className="w-5 h-5" />, text: "We treat your business like our own" },
+                { icon: <MessageCircle className="w-5 h-5" />, text: "Every solution is custom built" },
+                { icon: <Lock className="w-5 h-5" />, text: "We measure success by your growth" }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 + idx * 0.1, duration: 0.5 }}
+                  className="flex items-center space-x-2 text-slate-300 text-sm font-medium"
+                >
+                  <span className="text-blue-400">{item.icon}</span>
+                  <span>{item.text}</span>
+                </motion.div>
               ))}
             </motion.div>
 
             {/* Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full sm:w-auto">
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-8 w-full sm:w-auto"
+            >
               <Link href="#contact-form" className="w-full sm:w-auto">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.96 }}
-                  className="w-full sm:w-auto bg-white text-[#2563EB] px-10 py-4.5 rounded-full font-bold text-base shadow-xl transition-colors hover:bg-slate-50 cursor-pointer"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative overflow-hidden w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-full font-semibold text-lg flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-xl hover:shadow-blue-500/25 border border-blue-500 hover:border-blue-400"
                 >
-                  Start Your Project Today
+                  <span className="relative z-10">Start Your Project Today</span>
+                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:bg-white group-hover:text-blue-600 transition-colors duration-300 ml-2">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
                 </motion.button>
               </Link>
               <Link href="#contact-form" className="w-full sm:w-auto">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.96 }}
-                  className="w-full sm:w-auto border-2 border-white text-white px-10 py-4.5 rounded-full font-bold text-base hover:bg-white hover:text-[#2563EB] transition-all duration-300 cursor-pointer"
+                  whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full sm:w-auto bg-transparent border border-white/20 text-white px-10 py-5 rounded-full font-semibold text-lg transition-all cursor-pointer hover:border-white/40"
                 >
                   Send Us a Message
                 </motion.button>
               </Link>
-            </div>
+            </motion.div>
 
             {/* Warm Sign-off */}
             <motion.p
               variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
               transition={{ duration: 1.2 }}
-              className="text-white/50 text-sm italic font-inter"
+              className="text-slate-500 text-sm italic font-normal pt-4"
             >
               — The Bloom Invest Team 🌸
             </motion.p>
